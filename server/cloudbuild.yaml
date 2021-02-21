@@ -1,0 +1,24 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia.gcr.io/jochana/portfolio:$COMMIT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia.gcr.io/jochana/portfolio:$COMMIT_SHA']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'portfolio'
+      - '--image'
+      - 'asia.gcr.io/jochana/portfolio:$COMMIT_SHA'
+      - '--region'
+      - 'asia-northeast1'
+      - '--memory'
+      - '256'
+      - '--cpu'
+      - '1'
+      - '--platform'
+      - 'managed'
+images:
+  - 'asia.gcr.io/jochana/portfolio:$COMMIT_SHA'
+timeout: 1800s
