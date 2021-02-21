@@ -33,7 +33,9 @@ function Info() {
 			<div style={{width: '100%', height: '100%', padding: '50px 20px', display: 'flex', flexDirection: 'column', boxSizing: 'border-box'}}>
 				<T bold big>Detail</T>
 				<T bold><Link target='_black' href='https://chikalab-h2rvr25sca-du.a.run.app/'>사이트 바로가기</Link></T>
-				<T bold><Link target='_black' href='https://github.com/Jo-chana/chikalab'>Git Repository</Link></T>
+				<T bold><Link target='_black' href='https://www.notion.so/Chika-Lab-Util-codes-0159871529f149608e848d2ebb029c37'>
+					Publicly available Codes
+				</Link></T>
 			</div>
 		</div>
 	)
