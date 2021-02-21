@@ -6,5 +6,4 @@ __pychache__
 **/*.md
 venv
 react-app/*.md
-server/build
 
