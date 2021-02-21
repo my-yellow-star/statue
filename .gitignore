@@ -1,0 +1,8 @@
+.idea/
+__pychache__
+.pytest_cache
+.cache
+**/*.class
+**/*.md
+venv
+react-app/*.md
