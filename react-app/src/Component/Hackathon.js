@@ -31,6 +31,7 @@ function Info() {
 			<div style={{width: '100%', height: '100%', padding: '50px 20px', display: 'flex', flexDirection: 'column', boxSizing: 'border-box'}}>
 				<T bold big>Detail</T>
 				<T bold><Link href='https://www.notion.so/10-0b478d6672174f99bfeba95e26a1e680' target='_blank'>개발일지 바로가기</Link></T>
+				<T bold><Link href='https://www.notion.so/161b076f2b4d4eb99305c76001551039' target='_blank'>API 문서</Link></T>
 				<T bold><Link href='https://github.com/Jo-chana/Course_RecSys_Chatbot' target='_blank'>Git Repository</Link></T>
 			</div>
 		</div>
