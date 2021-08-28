@@ -8,7 +8,7 @@ const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
 
 function Statue() {
  
-    const model = useGLTF('https://chana-s3.s3.ap-northeast-2.amazonaws.com/vierge.glb') as any
+    const model = useGLTF('https://chana-public.s3.ap-northeast-2.amazonaws.com/vierge.glb') as any
     const group = useRef() as React.MutableRefObject<GroupProps>
 
     useFrame(({ clock, mouse }) => {
