@@ -1,6 +1,13 @@
 import { ColorTheme } from '../App';
 
-export const Color = (theme: ColorTheme) => {
+export enum Color {
+    grey = '#474747',
+    yellow = 'yellow',
+    pink = '#eb1e99',
+    blue = '#1c29e0'
+}
+
+export const getThemeColor = (theme: ColorTheme) => {
     switch(theme) {
         case ColorTheme.Light:
             return {

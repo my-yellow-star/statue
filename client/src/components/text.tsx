@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import { ColorContext } from '../App';
-import { Color } from '../style/color';
+import { getThemeColor } from '../style/color';
 
 export enum FontSize {
     P10 = 10,
@@ -11,6 +11,8 @@ export enum FontSize {
     P18 = 18,
     P20 = 20,
     P24 = 24,
+    P36 = 36,
+    P48 = 48
 }
 
 export default function CAText({
@@ -19,22 +21,25 @@ export default function CAText({
     color,
     msg,
     style,
+    className = ''
 }: {
     fontSize?:      FontSize;
     fontWeight?:    'normal' | 'bold' | 'lighter';
     color?:         string;
     msg:            any;
     style?:         React.CSSProperties;
+    className?:     string;
 }) {
 
     const theme = useContext(ColorContext)
-    const themeColor = Color(theme)
+    const themeColor = getThemeColor(theme)
 
-    return <p style={ { 
+    return <p className={ className } style={ { 
         fontFamily: 'serif',
         fontWeight,
         fontSize,
         color: color ?? themeColor.text,
+        textAlign: 'center',
         ...style
     } }>{ `${msg}` }</p>
 }

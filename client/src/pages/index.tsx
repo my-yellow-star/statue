@@ -1,5 +1,7 @@
-import Main from './main';
+import Home from './home';
+import Intro from './intro';
 
 export {
-    Main,
+    Intro,
+    Home
 }

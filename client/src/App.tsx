@@ -1,15 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
-import { use100vh } from 'react-div-100vh';
+import React, { createContext, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 
-import { ThreeComponent } from './components/three';
-import { Main } from './pages';
-import { Color } from './style/color';
+import RootContainer from './route/root';
 
 export enum Device {
-  Small,
-  Medium,
-  Large
+  Small = 'small',
+  Medium = 'medium',
+  Large = 'large'
 }
 
 export enum ColorTheme {
@@ -17,52 +14,41 @@ export enum ColorTheme {
   Dark
 }
 
-export const DeviceContext = createContext(Device.Small)
+const WINDOW_WITDH = window.innerWidth
+const DEVICE_SIZE = WINDOW_WITDH >= 1024 ? Device.Large :
+  WINDOW_WITDH >= 720 ? Device.Medium : Device.Small
+
+export const DeviceContext = createContext(DEVICE_SIZE)
 export const ColorContext = createContext(ColorTheme.Light)
-
-function Background({ 
-  children 
-}: {
-  children: React.ReactNode | React.ReactNode[];
-}) {
-
-  const theme = useContext(ColorContext);
-  const color = Color(theme)
-  const height = use100vh();
-
-  return <div style={ { 
-    backgroundColor: color.backgroundColor,
-    height: height ?? '100vh'
-  } }>
-    { children }
-  </div>
-}
 
 function App() {
 
-  const width = window.innerWidth
-  const deviceSize = width >= 1024 ? Device.Large :
-  width >= 720 ? Device.Medium : Device.Small
-  const [device, setDevice] = useState<Device>(deviceSize)
+  
+  const [device, setDevice] = useState<Device>(DEVICE_SIZE)
   const theme = ColorTheme.Dark
-  console.log('render')
-  window.addEventListener('resize', (e) => {
-    e.preventDefault();
-    if(window.innerWidth >= 1024)  {
-      setDevice(Device.Large)
-    } else if (window.innerWidth >= 720) {
-      setDevice(Device.Medium)
-    } else {
-      setDevice(Device.Small)
+
+  useEffect(() => {
+    function watchWindowWith() {
+      window.addEventListener('resize', (e) => {
+        e.preventDefault();
+        if(window.innerWidth >= 1024)  {
+          setDevice(Device.Large)
+        } else if (window.innerWidth >= 720) {
+          setDevice(Device.Medium)
+        } else {
+          setDevice(Device.Small)
+        }
+      })
     }
-  })
+    watchWindowWith()
+    return () => {
+      window.removeEventListener('resize', () => ({}))
+    }
+  }, [])
 
   return <DeviceContext.Provider value={ device }>
     <ColorContext.Provider value={ theme }>
-      <Background>
-        <ThreeComponent />
-        <Main />
-      </Background>
+      <RootContainer />
     </ColorContext.Provider>
   </DeviceContext.Provider>;
 }

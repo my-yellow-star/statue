@@ -1,15 +1,43 @@
 import { useGLTF } from '@react-three/drei';
 import { Canvas, GroupProps, MeshProps, useFrame } from '@react-three/fiber';
-import React, { Suspense, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 
-import CAText from './text';
+import { Device, DeviceContext } from '../App';
+import { Color } from '../style/color';
 
 const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
+const COLOR_LIST = [Color.yellow, Color.pink, Color.blue]
 
-function Statue() {
- 
-    const model = useGLTF('https://chana-public.s3.ap-northeast-2.amazonaws.com/vierge.glb') as any
+let statueModel: any = null
+
+function useLoadStatueModel() {
+    if(statueModel) return statueModel
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    statueModel = useGLTF('https://chana-public.s3.ap-northeast-2.amazonaws.com/vierge.glb') as any
+    return statueModel
+}
+
+function Statue({
+    onClick,
+}: {
+    onClick?: () => void;
+}) {
+
+    const device = useContext(DeviceContext)
+    const position = device === Device.Small ? [0.2, -2.3, 0] : [0.2, -2.7, 0]
+
+    const model = useLoadStatueModel()
     const group = useRef() as React.MutableRefObject<GroupProps>
+    const scale = [250, 250, 250]
+    const [color, setColor] = useState(Color.grey)
+    let colorIndex = useRef(0)
+
+    const updateColor = useCallback(() => {
+        if(device === Device.Small) return
+        setColor(COLOR_LIST[colorIndex.current % 3])
+        colorIndex.current += 1
+    }, [device])
 
     useFrame(({ clock, mouse }) => {
         group.current.rotation.y = lerp(group.current.rotation.y, mouse.x * (Math.PI / 5), 0.005)
@@ -17,10 +45,14 @@ function Statue() {
     
     return <group dispose={null}>
         <group ref={group}>
-            <mesh visible castShadow receiveShadow geometry={model.nodes.default.geometry} scale={[300, 300, 300]} rotation={[ -1.5, 0, 0]} position={[0.2, -2.7, 0]}>
-                <meshStandardMaterial attach="material" roughness={0.9} metalness={0.5} color="#474747" />
+            <mesh visible castShadow receiveShadow geometry={model.nodes.default.geometry} scale={scale} rotation={[ -1.5, 0, 0]} position={position}
+                onPointerDown={onClick}
+                onPointerOver={updateColor}
+            >
+                <meshStandardMaterial attach="material" roughness={0.9} metalness={0.5} color={ color } />
             </mesh>
             <Lights />
+            { device === Device.Small && <><spotLight position={[0, 0, 8]} /></>}
         </group>
     </group>
 }
@@ -32,25 +64,39 @@ function Box() {
     // Set up state for the hovered and active state
     const [active, setActive] = useState(false)
     // Rotate mesh every frame, this is outside of React without overhead
+    const [color, setColor] = useState(COLOR_LIST[0])
+    let colorIndex = useRef(0)
+    let frame = useRef(0)
     useFrame((e) => {
+        frame.current += 1
         mesh.current.rotation.x += 0.01
         mesh.current.rotation.y += 0.01
         mesh.current.rotation.z += 0.01
+        if(frame.current % 100 === 0) {
+            colorIndex.current += 1
+            setColor(COLOR_LIST[colorIndex.current % 3])
+        }
     })
   
-    return <Canvas style={ { 
-        position: 'absolute',
-        bottom: 10,
-    } }><group>
-      <mesh
+    return <mesh
         ref={mesh}
         scale={ 0.2 }
         onClick={(event) => setActive(!active)}>
         <boxGeometry args={[2, 2, 2]} />
-        <meshStandardMaterial color={ '#EB1E99' } />
+        <meshStandardMaterial color={ color } />
       </mesh>
-      <ambientLight />
-    </group>
+      
+}
+
+export function BoxComponent() {
+
+    const group = useRef() as React.MutableRefObject<GroupProps>
+
+    return <Canvas>
+        <group ref={ group }>
+        <Box />
+        <spotLight position={[0, 0, 8]} />
+        </group>
     </Canvas> 
 }
 
@@ -91,23 +137,15 @@ function Lights() {
     )
   }
 
-export function ThreeComponent() {
-
-    const [hovered, setHovered] = useState(false)
-    const group = useRef() as React.MutableRefObject<GroupProps>
+export function StatueComponent({
+    onStatueClick,
+}: {
+    onStatueClick?: () => void;
+}) {
     
-    return <Suspense fallback={ <CAText msg='She is comming ..' /> }>
-        <Canvas style={ { 
-        height: '100vh',
+    return <Canvas style={ { 
         position: 'absolute',
     } }>
-        <Statue />
-        {/* <group dispose={null}>
-            <group ref={ group }>
-                {/* <Box setHover={ setHovered} />
-                <Lights />
-            </group>
-        </group> */}
+        <Statue onClick={ onStatueClick } />
     </Canvas>
-    </Suspense>
   }
